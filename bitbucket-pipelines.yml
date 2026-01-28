@@ -1,0 +1,12 @@
+image: atlassian/default-image:3
+
+pipelines:
+  default:
+    - step:
+        name: Simple Deploy (No SSH Key)
+        script:
+          - echo "Starting deployment"
+          - apt-get update && apt-get install -y sshpass
+          - sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "rm -rf /var/www/demo/*"
+          - sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no index.html $SERVER_USER@$SERVER_IP:/var/www/demo/
+          - echo "Deployment complete"
