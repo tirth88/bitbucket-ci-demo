@@ -3,10 +3,11 @@ image: atlassian/default-image:3
 pipelines:
   default:
     - step:
-        name: Simple Deploy (No SSH Key)
+        name: Deploy using SSH key
         script:
           - echo "Starting deployment"
-          - apt-get update && apt-get install -y sshpass
-          - sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "rm -rf /var/www/demo/*"
-          - sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no index.html $SERVER_USER@$SERVER_IP:/var/www/demo/
+          - ssh -o StrictHostKeyChecking=no ubuntu@16.145.52.230 "sudo rm -rf /var/www/demo/*"
+          - scp -o StrictHostKeyChecking=no index.html ubuntu@16.145.52.230:/var/www/demo/
+          - scp -o StrictHostKeyChecking=no login.html ubuntu@16.145.52.230:/var/www/demo/
+          - ssh -o StrictHostKeyChecking=no ubuntu@16.145.52.230 "sudo chown -R www-data:www-data /var/www/demo"
           - echo "Deployment complete"
