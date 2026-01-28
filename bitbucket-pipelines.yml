@@ -6,8 +6,19 @@ pipelines:
         name: Deploy using SSH key
         script:
           - echo "Starting deployment"
+
+          # Clean old files (sudo allowed)
           - ssh -o StrictHostKeyChecking=no ubuntu@16.145.52.230 "sudo rm -rf /var/www/demo/*"
-          - scp -o StrictHostKeyChecking=no index.html ubuntu@16.145.52.230:/var/www/demo/
-          - scp -o StrictHostKeyChecking=no login.html ubuntu@16.145.52.230:/var/www/demo/
+
+          # Copy files to temp directory
+          - scp -o StrictHostKeyChecking=no index.html ubuntu@16.145.52.230:/tmp/index.html
+          - scp -o StrictHostKeyChecking=no login.html ubuntu@16.145.52.230:/tmp/login.html
+
+          # Move files to web directory with sudo
+          - ssh -o StrictHostKeyChecking=no ubuntu@16.145.52.230 "sudo mv /tmp/index.html /var/www/demo/"
+          - ssh -o StrictHostKeyChecking=no ubuntu@16.145.52.230 "sudo mv /tmp/login.html /var/www/demo/"
+
+          # Fix ownership for NGINX
           - ssh -o StrictHostKeyChecking=no ubuntu@16.145.52.230 "sudo chown -R www-data:www-data /var/www/demo"
+
           - echo "Deployment complete"
